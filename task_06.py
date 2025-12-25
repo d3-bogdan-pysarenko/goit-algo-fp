@@ -8,15 +8,22 @@ def greedy_algorithm(items, budget):
 
     selected_items = []
     total_calories = 0
+    spent_budget = 0
     remaining_budget = budget
 
     for name, ratio, cost, calories in ratios:
         if remaining_budget >= cost:
             selected_items.append(name)
             total_calories += calories
+            spent_budget += cost
             remaining_budget -= cost
 
-    return selected_items, total_calories
+    return {
+        "items": selected_items,
+        "calories": total_calories,
+        "spent": spent_budget,
+        "remaining": remaining_budget
+    }
 
 
 def dynamic_programming(items, budget):
@@ -37,14 +44,33 @@ def dynamic_programming(items, budget):
                 dp[i][w] = dp[i-1][w]
 
     selected_items = []
+    total_spent = 0
     w = budget
     for i in range(n, 0, -1):
         if dp[i][w] != dp[i-1][w]:
             name = item_names[i-1]
             selected_items.append(name)
+            total_spent += items[name]["cost"]
             w -= items[name]["cost"]
 
-    return selected_items, dp[n][budget]
+    return {
+        "items": selected_items,
+        "calories": dp[n][budget],
+        "spent": total_spent,
+        "remaining": budget - total_spent
+    }
+
+
+
+#-----------------------------------------------------------------------------
+# Checking time
+
+def print_results(title, res):
+    print(f"--- {title} ---")
+    print(f"Food: {', '.join(res['items'])}")
+    print(f"Callories: {res['calories']}")
+    print(f"Spent money: {res['spent']}")
+    print(f"Money left: {res['remaining']}\n")
 
 items = {
     "pizza": {"cost": 50, "calories": 300},
@@ -55,21 +81,11 @@ items = {
     "potato": {"cost": 25, "calories": 350}
 }
 
-budget = 100
+user_budget = 100
 
-#-----------------------------------------------------------------------------
-# Checking time
+greedy_res = greedy_algorithm(items, user_budget)
+dp_res = dynamic_programming(items, user_budget)
 
-
-greedy_result, greedy_calories = greedy_algorithm(items, budget)
-dp_result, dp_calories = dynamic_programming(items, budget)
-
-print(f"Budget: {budget}")
-print("-" * 30)
-print("Greedy algorithm:")
-print(f"Food: {greedy_result}")
-print(f"Callories: {greedy_calories}")
-print("-" * 30)
-print("Dymanic programming:")
-print(f"Food: {dp_result}")
-print(f"Callories: {dp_calories}")
+print(f"Initial money: {user_budget}\n")
+print_results("Greedy Algorithm", greedy_res)
+print_results("DynamicProgramming", dp_res)
