@@ -86,6 +86,6 @@ user_budget = 100
 greedy_res = greedy_algorithm(items, user_budget)
 dp_res = dynamic_programming(items, user_budget)
 
-print(f"Initial money: {user_budget}\n")
+print(f"\nInitial money: {user_budget}\n")
 print_results("Greedy Algorithm", greedy_res)
 print_results("DynamicProgramming", dp_res)
